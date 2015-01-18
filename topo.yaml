@@ -1,0 +1,46 @@
+# MapProxy configuration automatically generated from:
+#   http://mapy.geoportal.gov.pl/wss/service/img/guest/TOPO/MapServer/WMSServer
+#
+# NOTE: The generated configuration can be highly inefficient,
+#       especially when multiple layers and caches are requested at once.
+#       Make sure you understand the generated configuration!
+#
+# Created on 2015-01-18 11:37:16.207556 with:
+# /usr/local/bin/mapproxy-util autoconfig --capabilities http://mapy.g \
+#    eoportal.gov.pl/wss/service/img/guest/TOPO/MapServer/WMSServer \
+#    --output topo.yaml
+
+
+caches:
+  osm_cache:
+    grids: [webmercator]
+    sources: [Raster_wms]
+grids:
+    webmercator:
+        base: GLOBAL_WEBMERCATOR
+layers:
+  - name: osm
+    sources: [osm_cache]
+    title: osm
+services:
+  demo:
+  tms:
+    use_grid_names: true
+  wms:
+    md:
+      title: "Us\u0142uga przegl\u0105dania (WMS) danych topograficznych dla Polski"
+sources:
+  Raster_wms:
+    coverage:
+      bbox: [12.3097805799261, 48.4179527558644, 26.1115737816178, 55.7458462615901]
+      srs: EPSG:4326
+    req:
+      layers: Raster
+      transparent: true
+      url: http://mapy.geoportal.gov.pl:80/wss/service/img/guest/TOPO/MapServer/WMSServer?
+    supported_srs: ['EPSG:4326', 'EPSG:2178', 'EPSG:2179', 'EPSG:2176', 'EPSG:2177',
+      'EPSG:2180']
+    type: wms
+    wms_opts:
+      featureinfo: true
+      legendurl: http://mapy.geoportal.gov.pl:80/wss/service/img/guest/TOPO/MapServer/WMSServer?REQUEST=GetLegendGraphic%26VERSION=1.1.1%26FORMAT=image/png%26LAYER=Raster%26WIDTH=200
