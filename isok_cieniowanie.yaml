@@ -1,0 +1,87 @@
+services:
+  demo:
+  tms:
+    use_grid_names: true
+    # origin for /tiles service
+    origin: 'nw'
+  kml:
+      use_grid_names: true
+  wmts:
+  wms:
+    md:
+      title: MapProxy Main WMS
+    srs: ['EPSG:4326', 'CRS:84', 'EPSG:2180', 'EPSG:900913']
+
+layers:
+  - name: ISOK_CIEN_Layer
+    title: Usluga przegladania hipsometrii o stalej skali barw dla NMT o rozdzielczosci 1m (dane z projektu ISOK). Profil kafelkowy (WMTS)
+    sources: [ISOK_CIEN_Cache]
+  - name: ISOK_CIEN_ForWMTS
+    title: ISOK_CIEN_Layer (WMTS compatible)
+    sources: [ISOK_CIEN_Cache_ForWMTS]
+  - name: ISOK_CIEN (Debug)
+    title: ISOK_CIEN (Debug)
+    sources: [ISOK_CIEN_Cache_ForWMTS, MapquestLabelsCache]
+
+caches:
+  MapquestLabelsCache:
+    sources: [MapquestLabelsSource]
+    disable_storage: true
+  ISOK_CIEN_Cache:
+    grids: [ISOK_CIEN_Grid]
+    sources: [ISOK_CIEN_Source]
+    disable_storage: true
+  ISOK_CIEN_Cache_ForWMTS:
+    grids: [ISOK_CIEN_ForWMTS]
+    sources: [ISOK_CIEN_Cache]
+    disable_storage: true
+
+sources:
+  MapquestLabelsSource:
+    type: tile
+    url: http://ttiles01.mqcdn.com/tiles/1.0.0/vy/hyb/%(tms_path)s.jpg
+    grid: EPSG_3857_NW_GRID
+    transparent: true
+  ISOK_CIEN_Source:
+    type: tile
+    coverage:
+      srs: EPSG:2180
+    grid: ISOK_CIEN_Grid
+    url: http://mapy.geoportal.gov.pl/wss/service/WMTS/guest/wmts/ISOK_CIEN?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ISOK_Cien&STYLE=default&TILEMATRIXSET=EPSG:2180&TILEMATRIX=EPSG:2180:%(z)s&TILEROW=%(y)s&TILECOL=%(x)s&FORMAT=image/png&rfh=1
+
+grids:
+  EPSG_3857_NW_GRID:
+    srs: EPSG:3857
+    num_levels: 15
+    origin: nw
+  ISOK_CIEN_ForWMTS:
+    base: GLOBAL_WEBMERCATOR
+  ISOK_CIEN_Grid:
+    origin: nw # dziwne, zahashowanie tego originu powoduje ze ten layer staje sie kompatybilny z TMS, ale przestaje byc kompatybilny z WMTS
+    srs: EPSG:2180
+    bbox: [100000, 0, 1190000, 850000] # wynikalo z: <TopLeftCorner>850000.0 100000.0</TopLeftCorner>
+    bbox_srs: EPSG:2180
+    tile_size: [512, 512]
+    res: [
+      #  res            level     scale @90.7 DPI
+      2116.666666666700, # EPSG:2180:0  - 7559523,80952381
+      1058.333333333300, # EPSG:2180:1  - 3779761,90476190
+      529.166666666700,  # EPSG:2180:2  - 1889880,95238095
+      264.583333333334,  # EPSG:2180:3  - 944940,476190476
+      132.291666666667,  # EPSG:2180:4  - 472470,238095238
+      66.145833333334,   # EPSG:2180:5  - 236235,119047619
+      26.458333333333,   # EPSG:2180:6  - 94494,0476190476
+      13.229166666667,   # EPSG:2180:7  - 47247,0238095238
+      6.614583333333,    # EPSG:2180:8  - 23623,5119047619
+      2.645833333333,    # EPSG:2180:9  - 9449,40476190476
+      1.322916666667,    # EPSG:2180:10 - 4724,70238095238
+      0.529166666667,    # EPSG:2180:11 - 1889,88095238095
+      0.264583333333,    # EPSG:2180:12 - 944,940476190476
+      # res = scale / 3571,42857142856; scale przyszly z GetCapabilities WMTSu
+      # http://mapy.geoportal.gov.pl/wss/service/WMTS/guest/wmts/ISOK_CIEN?SERVICE=WMTS&REQUEST=GetCapabilities
+    ]
+
+globals:
+  srs:
+    proj_data_dir: 'epsg\'
+    axis_order_ne: ['EPSG:2180']
